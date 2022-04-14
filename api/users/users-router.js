@@ -48,12 +48,13 @@ router.delete('/:id', validateUserId, async (req, res, next) => {
   }
 });
 
-router.get('/:id/posts', validateUserId, (req, res, next) => {
-  Post.getByUser(req.params.id)
-    .then(posts => {
-      res.status(200).json(posts);
-    })
-    .catch(next);
+router.get('/:id/posts', validateUserId, async (req, res, next) => {
+  try {
+    const result = await User.getUserPosts(req.params.id)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
 });
 
 router.post('/:id/posts', validateUserId, validatePost, (req, res, next) => {
