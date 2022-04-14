@@ -9,24 +9,23 @@ function logger(req, res, next) {
 }
 
 async function validateUserId(req, res, next) {
-  const { id } = req.params;
   try {
-    const user = await User.get(id);
-    if (user) {
+    const user = await User.getById(req.params.id);
+    if (!user) {
+      res.status(404).json({ message: 'no such user' });
+    } else {
       req.user = user;
       next();
-    } else {
-      res.status(404).json({ message: 'User not found' });
     }
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 }
 
 function validateUser(req, res, next) {
  const { name } = req.body;
   if (!name || !name.trim()) {
-    res.status(400).json({ message: 'Missing required name field' });
+    res.status(400).json({ message: 'missing required name field' });
   } else {
     req.name = name.trim();
     next();
@@ -34,7 +33,13 @@ function validateUser(req, res, next) {
 }
 
 function validatePost(req, res, next) {
-  
+  const { text } = req.body
+  if (!text || !text.trim()) {
+    res.status(400).json({ message: 'missing required text field' });
+  } else {
+    req.text = text.trim();
+    next();
+  }
 }
 
 module.exports = {
