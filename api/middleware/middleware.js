@@ -9,16 +9,17 @@ function logger(req, res, next) {
 }
 
 async function validateUserId(req, res, next) {
+  const { id } = req.params;
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.get(id);
     if (user) {
       req.user = user;
       next();
     } else {
       res.status(404).json({ message: 'User not found' });
     }
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to validate user' });
+  } catch (error) {
+    next(error);
   }
 }
 
